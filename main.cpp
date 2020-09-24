@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+// 여기에 header 부분 intnet.h 같은거 include 
 
 
 
@@ -53,7 +54,7 @@ uint32_t isTCP(const u_char* packet)
 {
     ethernet_hdr* EH = (ethernet_hdr* )packet;
     ipv4_hdr* IH = (ipv4_hdr* )(packet + sizeof(ethernet_hdr));
-    if( ntohs(EH->ether_type) == 0x0800 &&  IH -> ip_p == 0x06)
+    if( ntohs(EH->ether_type) == 0x0800 &&  IH -> ip_p == 0x06) // 이 부분 즉시값 쓰지 않고, 헤더 따로 include 해서 쓰기
     {
         return 1;
     }
@@ -122,7 +123,7 @@ void parse_packet(const u_char* packet)
     }
     printf("\n");
     // print ip address
-    u_char* ip1 = (u_char*)inet_ntoa(*(struct in_addr*)&IH -> ip_src);
+    u_char* ip1 = (u_char*)inet_ntoa(*(struct in_addr*)&IH -> ip_src); // inet_ntoa 말고 caller buffer 쓰는 inet_ntop 쓰기!!! 그게 더 reentering이 된다.
     printf("src ip : %s", ip1);
     u_char* ip2 = (u_char*)inet_ntoa(*(struct in_addr*)&IH -> ip_dst);
     printf(" -> dest ip : %s\n", ip2);
